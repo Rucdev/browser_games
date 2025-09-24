@@ -20,6 +20,7 @@ export class Game {
     private config: GameConfig;
     private score: number = 0;
     private lastTime: number = 0;
+    private isReady: boolean = false;
 
     private readonly CANVAS_WIDTH = 800;
     private readonly CANVAS_HEIGHT = 500;
@@ -40,9 +41,25 @@ export class Game {
         this.inputManager = new InputManager();
         this.camera = new Camera(this.player, this.CANVAS_WIDTH, this.STAGE_WIDTH);
 
+        this.initializeGame();
+    }
+
+    private async initializeGame(): Promise<void> {
+        // スプライトの読み込み完了を待つ
+        await this.waitForSpritesLoad();
+
         this.spawnEnemies();
         this.spawnObstacles();
         this.setupUI();
+        this.isReady = true;
+    }
+
+    private async waitForSpritesLoad(): Promise<void> {
+        // プレイヤーのスプライト読み込み完了を待機
+        await this.player.waitForSpriteLoad();
+
+        // 敵のスプライトも読み込み（必要に応じて）
+        // TODO: 敵のスプライト読み込みも実装する場合はここに追加
     }
 
     private spawnEnemies(): void {
@@ -122,7 +139,7 @@ export class Game {
     }
 
     private update(deltaTime: number): void {
-        if (this.gameState !== GameState.PLAYING) return;
+        if (!this.isReady || this.gameState !== GameState.PLAYING) return;
 
         this.inputManager.update();
         const input = this.inputManager.getInput();
@@ -232,6 +249,11 @@ export class Game {
     private render(): void {
         this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
 
+        if (!this.isReady) {
+            this.drawLoadingScreen();
+            return;
+        }
+
         this.drawBackground();
         this.drawStage();
         this.drawObstacles();
@@ -328,12 +350,31 @@ export class Game {
         }
     }
 
+    private drawLoadingScreen(): void {
+        this.drawBackground();
+
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '36px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('魔界ランナー', this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 - 50);
+
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText('スプライト読み込み中...', this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 20);
+
+        // 簡単なローディングアニメーション
+        const dots = '.'.repeat((Math.floor(Date.now() / 500) % 3) + 1);
+        this.ctx.fillText(dots, this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 60);
+
+        this.ctx.textAlign = 'start';
+    }
+
     private restart(): void {
+        this.isReady = false;
         this.player = new Player(50, this.GROUND_Y - 48, this.config.hp);
         this.camera = new Camera(this.player, this.CANVAS_WIDTH, this.STAGE_WIDTH);
         this.score = 0;
         this.gameState = GameState.PLAYING;
-        this.spawnEnemies();
-        this.spawnObstacles();
+
+        this.initializeGame();
     }
 }

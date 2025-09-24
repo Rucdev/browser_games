@@ -9,7 +9,7 @@ SERVICE_NAME="browser-games"
 case "$1" in
   start)
     echo "Starting browser games server..."
-    docker-compose up -d
+    docker compose up -d
     echo "Server started! Access your games at http://localhost:8080"
     echo "Directory listing will be available to browse individual games"
     ;;

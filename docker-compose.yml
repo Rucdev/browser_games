@@ -5,5 +5,5 @@ services:
       - "8080:80"
     volumes:
       - .:/usr/share/nginx/html:ro
-    restart: unless-stopped
+    restart: always
     container_name: browser-games-server
