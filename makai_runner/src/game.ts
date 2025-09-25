@@ -58,8 +58,21 @@ export class Game {
         // プレイヤーのスプライト読み込み完了を待機
         await this.player.waitForSpriteLoad();
 
-        // 敵のスプライトも読み込み（必要に応じて）
-        // TODO: 敵のスプライト読み込みも実装する場合はここに追加
+        // 敵のスプライトを事前読み込み
+        await this.preloadEnemySprites();
+    }
+
+    private async preloadEnemySprites(): Promise<void> {
+        // 各種敵のスプライトを事前に読み込み
+        const walkerEnemy = new WalkingEnemy(0, 0);
+        const flyerEnemy = new FlyingEnemy(0, 0);
+        const diggerEnemy = new DiggingEnemy(0, 0, 0);
+
+        await Promise.all([
+            walkerEnemy.waitForSpriteLoad(),
+            flyerEnemy.waitForSpriteLoad(),
+            diggerEnemy.waitForSpriteLoad()
+        ]);
     }
 
     private spawnEnemies(): void {

@@ -70,6 +70,23 @@ export class WalkingEnemy extends Enemy {
         }
     }
 
+    public async waitForSpriteLoad(): Promise<void> {
+        // 既に読み込まれている場合はすぐに完了
+        if (this.spriteLoaded) {
+            return Promise.resolve();
+        }
+
+        // スプライトの読み込みが完了するまで待機
+        return new Promise<void>((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (this.spriteLoaded) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 10); // 10msごとにチェック
+        });
+    }
+
     update(deltaTime: number, playerPosition: Vector2, groundY: number): void {
         const dt = deltaTime / 1000;
 
@@ -91,7 +108,8 @@ export class WalkingEnemy extends Enemy {
                 walkerEnemySpriteSheet,
                 this.currentAnimationState,
                 screenX,
-                this.position.y
+                this.position.y,
+                false
             );
         } else {
             // フォールバック描画（スプライト未読み込み時）
@@ -126,6 +144,23 @@ export class FlyingEnemy extends Enemy {
         }
     }
 
+    public async waitForSpriteLoad(): Promise<void> {
+        // 既に読み込まれている場合はすぐに完了
+        if (this.spriteLoaded) {
+            return Promise.resolve();
+        }
+
+        // スプライトの読み込みが完了するまで待機
+        return new Promise<void>((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (this.spriteLoaded) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 10); // 10msごとにチェック
+        });
+    }
+
     update(deltaTime: number, playerPosition: Vector2, groundY: number): void {
         const dt = deltaTime / 1000;
 
@@ -150,7 +185,8 @@ export class FlyingEnemy extends Enemy {
                 flyerEnemySpriteSheet,
                 this.currentAnimationState,
                 screenX,
-                this.position.y
+                this.position.y,
+                false
             );
         } else {
             // フォールバック描画（スプライト未読み込み時）
@@ -171,7 +207,7 @@ export class FlyingEnemy extends Enemy {
 // 穴掘り型敵クラス
 export class DiggingEnemy extends Enemy {
     private state: EnemyState = EnemyState.MOVING;  // 敵の行動状態
-    private detectionRange: number = 200;           // プレイヤー検知範囲
+    private detectionRange: number = 400;           // プレイヤー検知範囲
     private emergeRange: number = 80;               // 出現範囲
     private stateTimer: number = 0;                 // 状態タイマー
     private groundY: number;                        // 地面Y座標
@@ -193,6 +229,23 @@ export class DiggingEnemy extends Enemy {
         }
     }
 
+    public async waitForSpriteLoad(): Promise<void> {
+        // 既に読み込まれている場合はすぐに完了
+        if (this.spriteLoaded) {
+            return Promise.resolve();
+        }
+
+        // スプライトの読み込みが完了するまで待機
+        return new Promise<void>((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (this.spriteLoaded) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 10); // 10msごとにチェック
+        });
+    }
+
     update(deltaTime: number, playerPosition: Vector2, groundY: number): void {
         const dt = deltaTime / 1000;
         const distanceToPlayer = Math.abs(this.position.x - playerPosition.x);
@@ -205,7 +258,7 @@ export class DiggingEnemy extends Enemy {
                 this.position.x += this.velocity.x * dt;
                 this.currentAnimationState = EnemyAnimationState.MOVING;
 
-                // プレイヤーが検知範囲内に入ったら地中に潜る
+                // プレイヤーが検知範囲内に入り、かつプレイヤーが敵より右にいる場合のみ地中に潜る
                 if (distanceToPlayer < this.detectionRange && playerPosition.x > this.position.x) {
                     this.state = EnemyState.UNDERGROUND;
                     this.currentAnimationState = EnemyAnimationState.UNDERGROUND;
@@ -215,8 +268,14 @@ export class DiggingEnemy extends Enemy {
 
             case EnemyState.UNDERGROUND:
                 this.currentAnimationState = EnemyAnimationState.UNDERGROUND;
+                // プレイヤーが敵より左に行った場合は通常移動に戻る
+                if (playerPosition.x < this.position.x) {
+                    this.state = EnemyState.MOVING;
+                    this.currentAnimationState = EnemyAnimationState.MOVING;
+                    this.stateTimer = 0;
+                }
                 // プレイヤーが近づいたら出現
-                if (distanceToPlayer < this.emergeRange) {
+                else if (distanceToPlayer < this.emergeRange) {
                     this.state = EnemyState.EMERGING;
                     this.currentAnimationState = EnemyAnimationState.EMERGING;
                     this.stateTimer = 0;
@@ -249,29 +308,30 @@ export class DiggingEnemy extends Enemy {
                 diggerEnemySpriteSheet,
                 this.currentAnimationState,
                 screenX,
-                this.position.y
+                this.position.y,
+                false
             );
         } else {
-            // フォールバック描画（スプライト未読み込み時）
-            if (this.state === EnemyState.UNDERGROUND) {
-                // 地中状態では土の部分のみ表示
-                ctx.fillStyle = '#795548';
-                ctx.fillRect(screenX, this.position.y + this.size.y - 8, this.size.x, 8);
-                return;
-            }
+            // // フォールバック描画（スプライト未読み込み時）
+            // if (this.state === EnemyState.UNDERGROUND) {
+            //     // 地中状態では土の部分のみ表示
+            //     ctx.fillStyle = '#795548';
+            //     ctx.fillRect(screenX, this.position.y + this.size.y - 8, this.size.x, 8);
+            //     return;
+            // }
 
-            ctx.fillStyle = '#FF9800';
-            ctx.fillRect(screenX, this.position.y, this.size.x, this.size.y);
+            // ctx.fillStyle = '#FF9800';
+            // ctx.fillRect(screenX, this.position.y, this.size.x, this.size.y);
 
-            ctx.fillStyle = '#FFF';
-            ctx.fillRect(screenX + 6, this.position.y + 6, 4, 4);
-            ctx.fillRect(screenX + 14, this.position.y + 6, 4, 4);
+            // // ctx.fillStyle = '#FFF';
+            // // ctx.fillRect(screenX + 6, this.position.y + 6, 4, 4);
+            // // ctx.fillRect(screenX + 14, this.position.y + 6, 4, 4);
 
-            // 出現状態では光るエフェクト
-            if (this.state === EnemyState.EMERGING) {
-                ctx.fillStyle = 'rgba(255, 152, 0, 0.5)';
-                ctx.fillRect(screenX - 4, this.position.y - 4, this.size.x + 8, this.size.y + 8);
-            }
+            // // 出現状態では光るエフェクト
+            // if (this.state === EnemyState.EMERGING) {
+            //     ctx.fillStyle = 'rgba(255, 152, 0, 0.5)';
+            //     ctx.fillRect(screenX - 4, this.position.y - 4, this.size.x + 8, this.size.y + 8);
+            // }
         }
     }
 
