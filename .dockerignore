@@ -1,7 +1,53 @@
+# Dependencies
+node_modules
+
+# Next.js build outputs
+.next
+out
+
+# Git
 .git
 .gitignore
+
+# Docker
 Dockerfile
 docker-compose.yml
+.dockerignore
+
+# Scripts
 run-games.sh
-README.md
+
+# Documentation
 *.md
+README.md
+
+# Old game directories (not needed in build)
+makai_runner/node_modules
+makai_runner/dist
+makai_runner/package.json
+makai_runner/package-lock.json
+makai_runner/vite.config.ts
+makai_runner/tsconfig.json
+tetris/node_modules
+tetris/dist
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+bun-debug.log*
+
+# K8s manifests (not needed in image)
+k8s/

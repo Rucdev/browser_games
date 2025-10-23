@@ -51,7 +51,7 @@ export enum EnemyAnimationState {
 
 // プレイヤーのスプライトシート設定
 export const playerSpriteSheet: SpriteSheet = {
-    imagePath: 'assets/sprites/player.png',
+    imagePath: '/makai-runner/assets/sprites/player.png',
     frameWidth: 32,
     frameHeight: 48,
     frames: {
@@ -89,7 +89,7 @@ export const playerSpriteSheet: SpriteSheet = {
 // 敵のスプライトシート設定
 // 歩行型敵
 export const walkerEnemySpriteSheet: SpriteSheet = {
-    imagePath: 'assets/sprites/walker_enemy.png',
+    imagePath: '/makai-runner/assets/sprites/walker_enemy.png',
     frameWidth: 24,
     frameHeight: 24,
     frames: {
@@ -102,7 +102,7 @@ export const walkerEnemySpriteSheet: SpriteSheet = {
 
 // 飛行型敵
 export const flyerEnemySpriteSheet: SpriteSheet = {
-    imagePath: 'assets/sprites/flyer_enemy.png',
+    imagePath: '/makai-runner/assets/sprites/flyer_enemy.png',
     frameWidth: 24,
     frameHeight: 24,
     frames: {
@@ -115,7 +115,7 @@ export const flyerEnemySpriteSheet: SpriteSheet = {
 
 // 穴掘り型敵
 export const diggerEnemySpriteSheet: SpriteSheet = {
-    imagePath: 'assets/sprites/digger_enemy.png',
+    imagePath: '/makai-runner/assets/sprites/digger_enemy.png',
     frameWidth: 24,
     frameHeight: 24,
     frames: {
