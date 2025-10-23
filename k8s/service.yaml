@@ -4,12 +4,14 @@ metadata:
   name: browser-games
   labels:
     app: browser-games
+    service: browser-games
 spec:
-  type: LoadBalancer
+  # ClusterIP for Istio (not LoadBalancer)
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 80
     protocol: TCP
-    name: http
+    name: http  # Named ports are required for Istio
   selector:
     app: browser-games

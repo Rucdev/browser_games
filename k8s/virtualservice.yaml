@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: browser-games
+  labels:
+    app: browser-games
+spec:
+  hosts:
+  - "games.example.com"  # Replace with your domain
+  gateways:
+  - browser-games-gateway
+  http:
+  # Route for all traffic
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: browser-games
+        port:
+          number: 80
+        subset: v1
+      weight: 100
+    # Optional: Traffic management features
+    # timeout: 30s
+    # retries:
+    #   attempts: 3
+    #   perTryTimeout: 10s
+    #   retryOn: 5xx,reset,connect-failure,refused-stream
+    # corsPolicy:
+    #   allowOrigins:
+    #   - exact: "https://example.com"
+    #   allowMethods:
+    #   - GET
+    #   - POST
+    #   - OPTIONS
+    #   allowHeaders:
+    #   - content-type
+    #   maxAge: "24h"

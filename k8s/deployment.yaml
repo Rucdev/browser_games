@@ -4,15 +4,24 @@ metadata:
   name: browser-games
   labels:
     app: browser-games
+    version: v1
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: browser-games
+      version: v1
   template:
     metadata:
       labels:
         app: browser-games
+        version: v1
+      annotations:
+        # Istio sidecar injection
+        sidecar.istio.io/inject: "true"
+        # Istio proxy configuration
+        proxy.istio.io/config: |
+          holdApplicationUntilProxyStarts: true
     spec:
       containers:
       - name: browser-games
