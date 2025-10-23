@@ -13,6 +13,7 @@ A collection of browser-based games built with Next.js and TypeScript, designed 
 ## Games
 
 - **魔界ランナー (Makai Runner)**: Side-scrolling action game
+- **神経衰弱 (Memory Game)**: Card matching memory game
 - **テトリス (Tetris)**: Classic puzzle game
 
 ## Quick Start
@@ -108,8 +109,9 @@ browser_games/
 ├── tsconfig.json               # TypeScript config
 └── Dockerfile                  # Multi-stage build
 
-# Legacy directories (kept for reference)
-makai_runner/                   # Original source
+# Standalone game directories
+makai_runner/                   # Standalone TypeScript game
+memory_game/                    # Standalone TypeScript game
 tetris/                         # Original source
 ```
 

@@ -28,6 +28,21 @@ export default function Home() {
           魔界ランナー
         </Link>
         <Link
+          href="/memory-game"
+          style={{
+            padding: '2rem',
+            backgroundColor: '#667eea',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            color: 'white',
+            fontSize: '1.5rem',
+            transition: 'transform 0.2s',
+            border: '2px solid #764ba2'
+          }}
+        >
+          神経衰弱
+        </Link>
+        <Link
           href="/tetris"
           style={{
             padding: '2rem',
