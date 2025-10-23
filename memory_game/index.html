@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神経衰弱ゲーム - Memory Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-item span {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            perspective: 1000px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 2em;
+        }
+
+        .card-back {
+            background: white;
+            font-size: 3em;
+            transform: rotateY(180deg);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .modal-content p {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .game-board {
+                gap: 10px;
+            }
+
+            .card-back {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎴 神経衰弱ゲーム 🎴</h1>
+
+        <div class="game-info">
+            <div class="info-item">
+                ペア数: <span id="pairs">0</span> / 8
+            </div>
+            <div class="info-item">
+                手数: <span id="moves">0</span>
+            </div>
+            <div class="info-item">
+                時間: <span id="time">0</span>秒
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="controls">
+            <button id="newGameBtn">新しいゲーム</button>
+        </div>
+    </div>
+
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <h2>🎉 おめでとうございます！ 🎉</h2>
+            <p id="winMessage"></p>
+            <button id="playAgainBtn">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script>
+        class MemoryGame {
+            constructor() {
+                this.cards = ['🍎', '🍊', '🍋', '🍌', '🍇', '🍓', '🍒', '🍑'];
+                this.gameBoard = document.getElementById('gameBoard');
+                this.pairsDisplay = document.getElementById('pairs');
+                this.movesDisplay = document.getElementById('moves');
+                this.timeDisplay = document.getElementById('time');
+                this.winModal = document.getElementById('winModal');
+                this.winMessage = document.getElementById('winMessage');
+
+                this.flippedCards = [];
+                this.matchedPairs = 0;
+                this.moves = 0;
+                this.time = 0;
+                this.timer = null;
+                this.canFlip = true;
+
+                this.init();
+                this.setupEventListeners();
+            }
+
+            init() {
+                this.matchedPairs = 0;
+                this.moves = 0;
+                this.time = 0;
+                this.flippedCards = [];
+                this.canFlip = true;
+
+                if (this.timer) {
+                    clearInterval(this.timer);
+                }
+
+                this.updateDisplay();
+                this.createBoard();
+            }
+
+            createBoard() {
+                this.gameBoard.innerHTML = '';
+                const cardPairs = [...this.cards, ...this.cards];
+                const shuffled = this.shuffle(cardPairs);
+
+                shuffled.forEach((emoji, index) => {
+                    const card = this.createCard(emoji, index);
+                    this.gameBoard.appendChild(card);
+                });
+            }
+
+            createCard(emoji, index) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+
+                card.innerHTML = `
+                    <div class="card-front">?</div>
+                    <div class="card-back">${emoji}</div>
+                `;
+
+                card.addEventListener('click', () => this.flipCard(card));
+                return card;
+            }
+
+            flipCard(card) {
+                if (!this.canFlip) return;
+                if (card.classList.contains('flipped')) return;
+                if (card.classList.contains('matched')) return;
+                if (this.flippedCards.length >= 2) return;
+
+                // Start timer on first move
+                if (this.moves === 0 && !this.timer) {
+                    this.startTimer();
+                }
+
+                card.classList.add('flipped');
+                this.flippedCards.push(card);
+
+                if (this.flippedCards.length === 2) {
+                    this.moves++;
+                    this.movesDisplay.textContent = this.moves;
+                    this.checkMatch();
+                }
+            }
+
+            checkMatch() {
+                this.canFlip = false;
+                const [card1, card2] = this.flippedCards;
+                const emoji1 = card1.dataset.emoji;
+                const emoji2 = card2.dataset.emoji;
+
+                if (emoji1 === emoji2) {
+                    setTimeout(() => {
+                        card1.classList.add('matched');
+                        card2.classList.add('matched');
+                        this.matchedPairs++;
+                        this.pairsDisplay.textContent = this.matchedPairs;
+                        this.flippedCards = [];
+                        this.canFlip = true;
+
+                        if (this.matchedPairs === this.cards.length) {
+                            this.gameWin();
+                        }
+                    }, 500);
+                } else {
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        this.flippedCards = [];
+                        this.canFlip = true;
+                    }, 1000);
+                }
+            }
+
+            shuffle(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.time++;
+                    this.timeDisplay.textContent = this.time;
+                }, 1000);
+            }
+
+            stopTimer() {
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }
+
+            updateDisplay() {
+                this.pairsDisplay.textContent = this.matchedPairs;
+                this.movesDisplay.textContent = this.moves;
+                this.timeDisplay.textContent = this.time;
+            }
+
+            gameWin() {
+                this.stopTimer();
+                this.winMessage.textContent = `${this.moves}手で${this.time}秒でクリア！`;
+                this.winModal.classList.add('show');
+            }
+
+            setupEventListeners() {
+                document.getElementById('newGameBtn').addEventListener('click', () => {
+                    this.stopTimer();
+                    this.init();
+                });
+
+                document.getElementById('playAgainBtn').addEventListener('click', () => {
+                    this.winModal.classList.remove('show');
+                    this.stopTimer();
+                    this.init();
+                });
+            }
+        }
+
+        // Initialize game when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new MemoryGame();
+        });
+    </script>
+</body>
+</html>
