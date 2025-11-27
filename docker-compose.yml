@@ -1,9 +1,0 @@
-services:
-  browser-games:
-    build: .
-    ports:
-      - "8080:80"
-    volumes:
-      - .:/usr/share/nginx/html:ro
-    restart: always
-    container_name: browser-games-server

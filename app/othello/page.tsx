@@ -39,7 +39,9 @@ export default function OthelloGame() {
 
   // WebSocket接続を初期化
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8081')
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const wsUrl = `${protocol}//${window.location.host}/api/ws`
+    const ws = new WebSocket(wsUrl)
 
     ws.onopen = () => {
       console.log('WebSocket connected')
@@ -217,7 +219,7 @@ export default function OthelloGame() {
       {!gameState.wsConnected && (
         <div className={styles.warning}>
           WebSocketサーバーに接続できません。<br />
-          `node othello-ws-server.js` を実行してください。
+          `npm run dev` を実行してください。
         </div>
       )}
 
