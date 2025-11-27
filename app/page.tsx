@@ -57,6 +57,21 @@ export default function Home() {
         >
           テトリス
         </Link>
+        <Link
+          href="/othello"
+          style={{
+            padding: '2rem',
+            backgroundColor: '#2d5016',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            color: 'white',
+            fontSize: '1.5rem',
+            transition: 'transform 0.2s',
+            border: '2px solid #1a3010'
+          }}
+        >
+          オセロ
+        </Link>
       </div>
     </main>
   )

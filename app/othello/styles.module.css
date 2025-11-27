@@ -1,0 +1,253 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+}
+
+.container h1 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.gameInfo {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.infoItem {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.infoItem span {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.thinking {
+  color: #ffa500;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.warning {
+  background: rgba(255, 0, 0, 0.2);
+  border: 2px solid rgba(255, 0, 0, 0.5);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.gameBoard {
+  background: #2d5016;
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  display: inline-block;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  background: #2d5016;
+  border: 1px solid #1a3010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+.cell:hover {
+  background: #3a6520;
+}
+
+.cell:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: -2px;
+}
+
+.cell.validMove {
+  background: #3d7020;
+}
+
+.cell.validMove:hover {
+  background: #4a8528;
+}
+
+.piece {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  animation: placepiece 0.3s ease-out;
+}
+
+@keyframes placepiece {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.black {
+  background: radial-gradient(circle at 30% 30%, #333, #000);
+}
+
+.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+}
+
+.hint {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  animation: hint-pulse 1s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.controls {
+  margin-top: 2rem;
+}
+
+.controls button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.controls button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.controls button:active {
+  transform: translateY(0);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadein 0.3s ease-out;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+  animation: slideup 0.3s ease-out;
+}
+
+@keyframes slideup {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modalContent h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.result {
+  font-size: 2rem;
+  margin: 1.5rem 0;
+}
+
+.modalContent button {
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.modalContent button:hover {
+  transform: scale(1.05);
+}
