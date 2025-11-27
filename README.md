@@ -22,10 +22,10 @@ A collection of browser-based games built with Next.js and TypeScript, designed 
 
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Run development server
-bun run dev
+npm run dev
 
 # Open http://localhost:3000
 ```
@@ -34,7 +34,7 @@ bun run dev
 
 ```bash
 # Build for production (static export)
-bun run build
+npm run build
 
 # Output directory: ./out
 ```
@@ -119,7 +119,7 @@ tetris/                         # Original source
 
 - **Framework**: Next.js 14 (App Router, Static Export)
 - **Language**: TypeScript
-- **Runtime**: Bun
+- **Runtime**: Node.js
 - **Container**: Docker (multi-stage build)
 - **Web Server**: nginx (alpine)
 - **Orchestration**: Kubernetes
@@ -128,7 +128,7 @@ tetris/                         # Original source
 
 ### Dockerfile
 
-- **Stage 1**: Bun builder - installs deps, builds Next.js
+- **Stage 1**: Node.js builder - installs deps, builds Next.js
 - **Stage 2**: nginx alpine - serves static files from `./out`
 - **Final Image Size**: ~20-30MB
 
